@@ -14,13 +14,6 @@ dependencies {
 }
 
 loom {
-    splitEnvironmentSourceSets()
-    mods {
-        "customchaos" {
-            sourceSet sourceSets.main
-            sourceSet sourceSets.client
-        }
-    }
 }
 
 processResources {
