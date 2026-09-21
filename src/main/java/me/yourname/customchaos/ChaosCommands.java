@@ -345,10 +345,14 @@ public final class ChaosCommands {
      * The command text is fixed by the GUI and never comes from the player.
      */
     public static int executeMenuCommand(ServerPlayer player, String command) {
-        return player.server.getCommands().performPrefixedCommand(
+        if (player.getServer() == null) {
+            return 0;
+        }
+        player.getServer().getCommands().performPrefixedCommand(
             player.createCommandSourceStack(),
             ROOT + " " + command
         );
+        return 1;
     }
 
     private static int heal(ServerPlayer target, CommandContext<CommandSourceStack> context) {
@@ -497,7 +501,7 @@ public final class ChaosCommands {
 
     private static int particles(CommandContext<CommandSourceStack> context, ParticleOptions particle, int count) {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = (ServerLevel) player.level();
         level.sendParticles(particle, player.getX(), player.getY() + 1.0, player.getZ(),
             count, 0.7, 1.0, 0.7, 0.02);
         success(context, "Chaos effect triggered.");
