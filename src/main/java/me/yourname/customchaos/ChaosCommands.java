@@ -22,7 +22,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 /**
@@ -285,15 +284,12 @@ public final class ChaosCommands {
     }
 
     private static void playerOrTarget(CommandDispatcher<CommandSourceStack> dispatcher, String name, String description,
-                                       BiFunction<ServerPlayer, CommandContext<CommandSourceStack>, Integer> handler) {
+                                       PlayerHandler handler) {
         dispatcher.register(Commands.literal(ROOT).then(
             Commands.literal(name)
-                .executes(c -> {
-                    ServerPlayer player = c.getSource().getPlayerOrException();
-                    return handler.apply(player, c);
-                })
+                .executes(c -> handler.run(c.getSource().getPlayerOrException(), c))
                 .then(Commands.argument("target", EntityArgument.player())
-                    .executes(c -> handler.apply(EntityArgument.getPlayer(c, "target"), c)))
+                    .executes(c -> handler.run(EntityArgument.getPlayer(c, "target"), c)))
         ));
     }
 
@@ -519,5 +515,11 @@ public final class ChaosCommands {
     @FunctionalInterface
     private interface FunctionLike {
         int run(CommandContext<CommandSourceStack> context) throws com.mojang.brigadier.exceptions.CommandSyntaxException;
+    }
+
+    @FunctionalInterface
+    private interface PlayerHandler {
+        int run(ServerPlayer player, CommandContext<CommandSourceStack> context)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException;
     }
 }
