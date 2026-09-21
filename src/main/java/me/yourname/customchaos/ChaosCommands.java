@@ -345,10 +345,10 @@ public final class ChaosCommands {
      * The command text is fixed by the GUI and never comes from the player.
      */
     public static int executeMenuCommand(ServerPlayer player, String command) {
-        if (player.getServer() == null) {
+        if (!(player.level() instanceof ServerLevel level)) {
             return 0;
         }
-        player.getServer().getCommands().performPrefixedCommand(
+        level.getServer().getCommands().performPrefixedCommand(
             player.createCommandSourceStack(),
             ROOT + " " + command
         );
