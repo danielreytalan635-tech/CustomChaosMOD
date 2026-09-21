@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "customchaos",
+  "version": "${version}",
+  "name": "CustomChaos",
+  "description": "A Fabric 26.2 chaos, prank, fun and utility mod with a large command system.",
+  "authors": ["DRT Talan"],
+  "contact": {
+    "sources": "https://github.com/danielreytalan635-tech/CustomChaosMOD"
+  },
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["me.yourname.customchaos.CustomChaos"],
+    "client": ["me.yourname.customchaos.CustomChaosClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": ">=0.161.0+26.2"
+  }
+}
