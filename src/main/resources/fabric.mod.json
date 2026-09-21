@@ -11,8 +11,7 @@
   "license": "MIT",
   "environment": "*",
   "entrypoints": {
-    "main": ["me.yourname.customchaos.CustomChaos"],
-    "client": ["me.yourname.customchaos.CustomChaosClient"]
+    "main": ["me.yourname.customchaos.CustomChaos"]
   },
   "depends": {
     "fabricloader": ">=0.19.5",
