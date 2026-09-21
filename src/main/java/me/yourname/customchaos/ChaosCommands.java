@@ -316,13 +316,15 @@ public final class ChaosCommands {
         page = Math.min(page, maxPages);
         int start = (page - 1) * HELP_PAGE_SIZE;
 
+        final int displayPage = page;
+        final int displayMaxPages = maxPages;
         CommandSourceStack source = context.getSource();
-        source.sendSuccess(() -> Component.literal("=== CustomChaos Commands " + page + "/" + maxPages + " ==="), false);
+        source.sendSuccess(() -> Component.literal("=== CustomChaos Commands " + displayPage + "/" + displayMaxPages + " ==="), false);
         for (int i = start; i < Math.min(start + HELP_PAGE_SIZE, names.size()); i++) {
             String name = names.get(i);
             source.sendSuccess(() -> Component.literal("/chaos " + name + " - " + COMMANDS.get(name)), false);
         }
-        source.sendSuccess(() -> Component.literal("Use /chaos help " + Math.min(page + 1, maxPages) + " for more."), false);
+        source.sendSuccess(() -> Component.literal("Use /chaos help " + Math.min(displayPage + 1, displayMaxPages) + " for more."), false);
         return 1;
     }
 
@@ -374,7 +376,7 @@ public final class ChaosCommands {
         return 1;
     }
 
-    private static int flight(CommandContext<CommandSourceStack> context) {
+    private static int flight(CommandContext<CommandSourceStack> context) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         player.getAbilities().mayfly = !player.getAbilities().mayfly;
         if (!player.getAbilities().mayfly) {
@@ -421,19 +423,19 @@ public final class ChaosCommands {
         return 1;
     }
 
-    private static int coords(CommandContext<CommandSourceStack> context) {
+    private static int coords(CommandContext<CommandSourceStack> context) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         success(context, "XYZ: " + String.format("%.1f %.1f %.1f", player.getX(), player.getY(), player.getZ()));
         return 1;
     }
 
-    private static int dimension(CommandContext<CommandSourceStack> context) {
+    private static int dimension(CommandContext<CommandSourceStack> context) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         success(context, "Dimension: " + player.level().dimension().identifier().toString());
         return 1;
     }
 
-    private static int facing(CommandContext<CommandSourceStack> context) {
+    private static int facing(CommandContext<CommandSourceStack> context) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         success(context, "Facing: " + player.getDirection().getName());
         return 1;
@@ -445,7 +447,7 @@ public final class ChaosCommands {
         return 1;
     }
 
-    private static int randomTeleport(CommandContext<CommandSourceStack> context) {
+    private static int randomTeleport(CommandContext<CommandSourceStack> context) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ThreadLocalRandom random = ThreadLocalRandom.current();
         double x = player.getX() + random.nextInt(-24, 25);
@@ -462,7 +464,7 @@ public final class ChaosCommands {
         return 1;
     }
 
-    private static int earthquake(CommandContext<CommandSourceStack> context) {
+    private static int earthquake(CommandContext<CommandSourceStack> context) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayer source = context.getSource().getPlayerOrException();
         for (ServerPlayer player : ((ServerLevel) source.level()).players()) {
             if (player.distanceToSqr(source) <= 100.0D) {
@@ -477,7 +479,7 @@ public final class ChaosCommands {
         return 1;
     }
 
-    private static int velocitySelf(CommandContext<CommandSourceStack> context, Vec3 vector, String name)
+    private static int velocitySelf(CommandContext<CommandSourceStack> context, Vec3 vector, String name) throws com.mojang.brigadier.exceptions.CommandSyntaxException
     {
         ServerPlayer player = context.getSource().getPlayerOrException();
         player.setDeltaMovement(vector);
@@ -499,7 +501,7 @@ public final class ChaosCommands {
         player.addEffect(new MobEffectInstance(effect, duration, amplifier, false, true, true));
     }
 
-    private static int particles(CommandContext<CommandSourceStack> context, ParticleOptions particle, int count) {
+    private static int particles(CommandContext<CommandSourceStack> context, ParticleOptions particle, int count) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ServerLevel level = (ServerLevel) player.level();
         level.sendParticles(particle, player.getX(), player.getY() + 1.0, player.getZ(),
