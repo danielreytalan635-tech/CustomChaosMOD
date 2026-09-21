@@ -488,7 +488,8 @@ public final class ChaosCommands {
     }
 
     private static int addEffect(CommandContext<CommandSourceStack> context,
-                                  Holder<net.minecraft.world.effect.MobEffect> effect, int duration, int amplifier, boolean notify) {
+                                  Holder<net.minecraft.world.effect.MobEffect> effect, int duration, int amplifier, boolean notify)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         applyEffect(player, effect, duration, amplifier);
         if (notify) {
