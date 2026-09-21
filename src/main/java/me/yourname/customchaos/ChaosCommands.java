@@ -334,12 +334,21 @@ public final class ChaosCommands {
         return 1;
     }
 
-    private static int menu(CommandContext<CommandSourceStack> context) {
-        context.getSource().sendSuccess(() -> Component.literal("=== CustomChaos Control Panel ==="), false);
-        context.getSource().sendSuccess(() -> Component.literal("/chaos help 1  |  Player effects"), false);
-        context.getSource().sendSuccess(() -> Component.literal("/chaos help 4  |  World & visual effects"), false);
-        context.getSource().sendSuccess(() -> Component.literal("/chaos help 6  |  Fun utilities & pranks"), false);
+    private static int menu(CommandContext<CommandSourceStack> context) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        ChaosMenu.open(player);
         return 1;
+    }
+
+    /**
+     * Executes a registered self-targeting Chaos command from the server-side GUI.
+     * The command text is fixed by the GUI and never comes from the player.
+     */
+    public static int executeMenuCommand(ServerPlayer player, String command) {
+        return player.server.getCommands().performPrefixedCommand(
+            player.createCommandSourceStack(),
+            ROOT + " " + command
+        );
     }
 
     private static int heal(ServerPlayer target, CommandContext<CommandSourceStack> context) {
