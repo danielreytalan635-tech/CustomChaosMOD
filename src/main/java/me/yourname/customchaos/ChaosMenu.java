@@ -4,11 +4,11 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.inventory.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ChestMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -92,9 +92,10 @@ public final class ChaosMenu extends ChestMenu {
 
         // Decorative separators / headers.
         decorative(0, Items.NETHER_STAR, "Chaos Control");
-        decorative(1, Items.LIGHT_BLUE_STAINED_GLASS_PANE, "Player Effects");
-        decorative(8, Items.LIGHT_BLUE_STAINED_GLASS_PANE, "Player Effects");
-        decorative(17, Items.ORANGE_STAINED_GLASS_PANE, "World / Visual");
+        // Keep the remaining slots visually simple so every item exists on 26.2.
+        decorative(1, Items.GLASS_PANE, "Player Effects");
+        decorative(8, Items.GLASS_PANE, "Player Effects");
+        decorative(17, Items.GLASS_PANE, "World / Visual");
     }
 
     private void button(int slot, net.minecraft.world.item.Item item, String label, String command) {
@@ -111,7 +112,7 @@ public final class ChaosMenu extends ChestMenu {
     }
 
     @Override
-    public void clicked(int slotId, int button, ClickType clickType, Player player) {
+    public void clicked(int slotId, int button, ContainerInput clickType, Player player) {
         if (slotId >= 0 && slotId < BUTTON_SLOTS) {
             if (player instanceof ServerPlayer serverPlayer) {
                 String command = actions.get(slotId);
