@@ -165,7 +165,7 @@ public final class ChaosCommands {
         extra.put("poof", c -> particles(c, ParticleTypes.POOF, 100));
         extra.put("sweep", c -> particles(c, ParticleTypes.SWEEP_ATTACK, 40));
         extra.put("lavafx", c -> particles(c, ParticleTypes.LAVA, 60));
-        extra.put("dust", c -> particles(c, ParticleTypes.DUST_PLUME, 60));
+        extra.put("dust", c -> particles(c, ParticleTypes.CLOUD, 60));
         extra.put("rainfx", c -> particles(c, ParticleTypes.RAIN, 80));
         extra.put("note", c -> particles(c, ParticleTypes.NOTE, 50));
         extra.put("soul", c -> particles(c, ParticleTypes.SOUL, 60));
@@ -175,8 +175,7 @@ public final class ChaosCommands {
         extra.put("firestormfx", c -> particles(c, ParticleTypes.FLAME, 140));
         extra.put("critstorm", c -> particles(c, ParticleTypes.CRIT, 140));
         extra.put("totemstorm", c -> particles(c, ParticleTypes.TOTEM_OF_UNDYING, 120));
-        extra.put("enchanted", c -> particles(c, ParticleTypes.ENCHANT, 140);
-        );
+        extra.put("enchanted", c -> particles(c, ParticleTypes.ENCHANT, 140));
         extra.put("soulstorm", c -> particles(c, ParticleTypes.SOUL_FIRE_FLAME, 120));
         extra.put("bubbleburst", c -> particles(c, ParticleTypes.BUBBLE, 120));
         extra.put("snowburst", c -> particles(c, ParticleTypes.SNOWFLAKE, 120));
