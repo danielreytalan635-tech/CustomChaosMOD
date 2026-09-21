@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import net.minecraft.core.Holder;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -101,7 +102,7 @@ public final class ChaosCommands {
         selfOnly(dispatcher, "witch", "Creates witch particles.", c -> particles(c, ParticleTypes.WITCH, 50));
         selfOnly(dispatcher, "totem", "Creates totem particles.", c -> particles(c, ParticleTypes.TOTEM_OF_UNDYING, 40));
         selfOnly(dispatcher, "spark", "Creates electric spark particles.", c -> particles(c, ParticleTypes.ELECTRIC_SPARK, 60));
-        selfOnly(dispatcher, "dragonbreath", "Creates dragon breath particles.", c -> particles(c, ParticleTypes.DRAGON_BREATH, 50));
+        selfOnly(dispatcher, "dragonbreath", "Creates a dragon-breath-like particle burst.", c -> particles(c, ParticleTypes.CLOUD, 50));
         selfOnly(dispatcher, "snowstorm", "Creates a snow particle burst.", c -> particles(c, ParticleTypes.SNOWFLAKE, 70));
         selfOnly(dispatcher, "ash", "Creates an ash burst.", c -> particles(c, ParticleTypes.ASH, 70));
         selfOnly(dispatcher, "bubbles", "Creates bubble particles.", c -> particles(c, ParticleTypes.BUBBLE, 60));
@@ -148,7 +149,7 @@ public final class ChaosCommands {
         selfOnly(dispatcher, "portalnoise", "Plays a portal sound locally.", c -> soundCommand(c, "playsound minecraft:block.portal.ambient master @s ~ ~ ~ 1 1"));
 
         // Additional self-effect aliases. Each is a real action, not a placeholder.
-        Map<String, Consumer<CommandContext<CommandSourceStack>>> extra = new LinkedHashMap<>();
+        Map<String, FunctionLike> extra = new LinkedHashMap<>();
         extra.put("dizzy", c -> addEffect(c, MobEffects.NAUSEA, 120, 1, true));
         extra.put("wobbly", c -> addEffect(c, MobEffects.NAUSEA, 220, 0, true));
         extra.put("sprint", c -> addEffect(c, MobEffects.SPEED, 600, 2, true));
@@ -245,12 +246,12 @@ public final class ChaosCommands {
     }
 
     private static void registerSelfEffect(CommandDispatcher<CommandSourceStack> dispatcher, String name,
-                                           net.minecraft.world.effect.MobEffect effect, int duration, int amplifier) {
+                                           Holder<net.minecraft.world.effect.MobEffect> effect, int duration, int amplifier) {
         selfOnly(dispatcher, name, "Temporary effect.", c -> addEffect(c, effect, duration, amplifier, true));
     }
 
     private static void registerTargetEffect(CommandDispatcher<CommandSourceStack> dispatcher, String name,
-                                             String description, net.minecraft.world.effect.MobEffect effect,
+                                             String description, Holder<net.minecraft.world.effect.MobEffect> effect,
                                              int duration, int amplifier) {
         var root = Commands.literal(ROOT).then(
             Commands.literal(name)
@@ -442,17 +443,15 @@ public final class ChaosCommands {
     }
 
     private static int bloodmoon(CommandContext<CommandSourceStack> context) {
-        ServerPlayer player = context.getSource().getPlayerOrException();
-        ServerLevel level = player.serverLevel();
-        level.setDayTime(18000L);
-        level.setWeatherParameters(0, 6000, true, true);
+        context.getSource().getServer().getCommands().performPrefixedCommand(context.getSource(), "time set night");
+        context.getSource().getServer().getCommands().performPrefixedCommand(context.getSource(), "weather thunder 6000");
         success(context, "Blood moon activated in this world.");
         return 1;
     }
 
     private static int earthquake(CommandContext<CommandSourceStack> context) {
         ServerPlayer source = context.getSource().getPlayerOrException();
-        for (ServerPlayer player : source.serverLevel().players()) {
+        for (ServerPlayer player : ((ServerLevel) source.level()).players()) {
             if (player.distanceToSqr(source) <= 100.0D) {
                 Vec3 delta = player.getDeltaMovement();
                 double x = (ThreadLocalRandom.current().nextDouble() - 0.5D) * 0.6D;
@@ -474,7 +473,7 @@ public final class ChaosCommands {
     }
 
     private static int addEffect(CommandContext<CommandSourceStack> context,
-                                  net.minecraft.world.effect.MobEffect effect, int duration, int amplifier, boolean notify) {
+                                  Holder<net.minecraft.world.effect.MobEffect> effect, int duration, int amplifier, boolean notify) {
         ServerPlayer player = context.getSource().getPlayerOrException();
         applyEffect(player, effect, duration, amplifier);
         if (notify) {
@@ -483,8 +482,8 @@ public final class ChaosCommands {
         return 1;
     }
 
-    private static void applyEffect(ServerPlayer player, net.minecraft.world.effect.MobEffect effect, int duration, int amplifier) {
-        player.addEffect(new MobEffectInstance(effect, duration, amplifier));
+    private static void applyEffect(ServerPlayer player, Holder<net.minecraft.world.effect.MobEffect> effect, int duration, int amplifier) {
+        player.addEffect(new MobEffectInstance(effect, duration, amplifier, false, true, true));
     }
 
     private static int particles(CommandContext<CommandSourceStack> context, ParticleOptions particle, int count) {
